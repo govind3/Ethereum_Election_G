@@ -10,6 +10,9 @@ contract Election {
     uint voteCount;      //unsigned integer type
   }
 
+  // Store accounts that have voted
+  mapping(address => bool) public voters;
+
   // Read/write Candidates
   mapping(uint => Candidate) public candidates; // store and fetch candidate id-based look up for each candidate
 
@@ -26,5 +29,20 @@ contract Election {
   function addCandidate (string memory _name) private {
         candidatesCount ++;                                // increment the candidate counter
         candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);  //update the mapping with a new Candidate struct, using the current candidate count as the key
+   }
+
+  function vote (uint _candidateId) public {
+        // require that they haven't voted before
+        require(!voters[msg.sender]);
+
+        // require a valid candidate
+        require(_candidateId > 0 && _candidateId <= candidatesCount);
+
+        // record that voter has voted
+        voters[msg.sender] = true;
+
+        // update candidate vote Count
+        candidates[_candidateId].voteCount ++;
     }
+
 }
